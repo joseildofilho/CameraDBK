@@ -8,6 +8,7 @@ import android.se.omapi.Session
 import android.support.v4.app.ActivityCompat
 import android.util.Log
 import armazemparaiba.com.br.cameradbk.R.id.camera
+import armazemparaiba.com.br.cameradbk.dataset.DatasetManager
 import com.otaliastudios.cameraview.SessionType
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
@@ -20,6 +21,8 @@ class MainActivity : AppCompatActivity() {
     private val file = createFolder()
 
     private var quant:Int = 0;
+
+    private val dataset: DatasetManager = DatasetManager(Environment.getExternalStorageDirectory())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         btn_toggle_record.setOnClickListener {
             if (!recording) {
                 var nome = txt_nome.text.toString()
-                camera.startCapturingVideo(getPlace(nome))
+                camera.startCapturingVideo(dataset.getFile("televisão","google", "quadrada"))
                 txt_nome.isFocusable = false
                 txt_nome.isEnabled = false
                 toast("Gravando")
