@@ -40,7 +40,10 @@ class MainActivity : AppCompatActivity() {
         btn_toggle_record.setOnClickListener {
             if (!recording) {
                 var nome = txt_nome.text.toString()
-                camera.startCapturingVideo(dataset.getFile("televisão","google", "quadrada"))
+                val split = nome.split(",", "/").map {
+                    it.replace(" ", "")
+                }
+                camera.startCapturingVideo(dataset.getFile(split[0],split[1], split[2]))
                 txt_nome.isFocusable = false
                 txt_nome.isEnabled = false
                 toast("Gravando")
