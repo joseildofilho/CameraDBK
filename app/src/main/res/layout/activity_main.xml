@@ -9,18 +9,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-    >
+            android:id="@+id/linearLayout">
         <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/txt_nome"
-                android:hint="Nome"
+                android:hint="Produto/Marca/Nome"
         />
         <com.otaliastudios.cameraview.CameraView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/camera"
-        />
+        >
+        </com.otaliastudios.cameraview.CameraView>
     </LinearLayout>
     <Button
         android:id="@+id/btn_toggle_record"
@@ -32,5 +33,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
     />
+    <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" app:srcCompat="@android:drawable/ic_menu_manage"
+            android:id="@+id/btn_settings" app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" android:layout_marginTop="52dp"
+            app:layout_constraintTop_toTopOf="@+id/linearLayout"
+            app:layout_constraintHorizontal_bias="1.0"
+    />
+    <TextView
+            android:text="00:00"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/txt_time" app:layout_constraintEnd_toEndOf="parent"
+            tools:layout_editor_absoluteY="52dp" app:layout_constraintStart_toStartOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>
