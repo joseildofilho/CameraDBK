@@ -1,27 +1,17 @@
 package armazemparaiba.com.br.cameradbk
 
 import android.Manifest
-import android.app.Service
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Environment
-import android.se.omapi.Session
 import android.support.v4.app.ActivityCompat
-import android.util.Log
-import armazemparaiba.com.br.cameradbk.R.id.camera
+import android.support.v7.app.AppCompatActivity
 import armazemparaiba.com.br.cameradbk.dataset.DatasetManager
 import com.otaliastudios.cameraview.SessionType
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.activity_main.view.*
-import kotlinx.coroutines.delay
-import org.jetbrains.anko.*
-import org.jetbrains.anko.coroutines.experimental.bg
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.toast
+import org.jetbrains.anko.uiThread
 import java.io.File
-import java.io.FileOutputStream
-import java.lang.Thread.sleep
-import java.util.*
-import java.util.concurrent.TimeUnit
-import java.util.concurrent.locks.Lock
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private var quant:Int = 0
     private val dataset: DatasetManager = DatasetManager(Environment.getExternalStorageDirectory())
     private var time: Long = 0
+    private var commonPath = File("     ")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +32,8 @@ class MainActivity : AppCompatActivity() {
 
         setupCamera()
 
+        setupInput()
+
         resetTimer()
 
         btn_settings.setOnClickListener {
@@ -52,23 +45,21 @@ class MainActivity : AppCompatActivity() {
     private fun setupCamera() {
         camera.setLifecycleOwner(this)
         camera.sessionType = SessionType.VIDEO
-        camera.videoMaxDuration = 6000
-        camera.addCameraListener(VideoListener())
         btn_toggle_record.setOnClickListener {
-            if (camera.isCapturingVideo.not()   ) {
-                var nome = txt_nome.text.toString()
-                val split = nome.split(",", "/").map {
-                    it.replace(" ", "")
+            if (camera.isCapturingVideo.not()) {
+                var nome = txt_input.text.toString()
+                if (nome.isEmpty().not()){
+                    val split = nome.split(",", "/").map {
+                        it.replace(" ", "")
+                    }
+                    resetTimer()
+                    camera.startCapturingVideo(dataset.getFile(split[0],split[1], split[2]))
+                    toast("Gravando")
+                } else {
+                    toast("Preencha o campo")
                 }
-                resetTimer()
-                camera.startCapturingVideo(dataset.getFile(split[0],split[1], split[2]))
-                txt_nome.isFocusable = false
-                txt_nome.isEnabled = false
-                toast("Gravando")
             } else {
                 camera.stopCapturingVideo()
-                txt_nome.isFocusable = true
-                txt_nome.isEnabled = true
                 toast("Gravação parada")
             }
         }
@@ -80,10 +71,28 @@ class MainActivity : AppCompatActivity() {
                     uiThread {
                         txt_time.text = "${delta / 1000 / 60}:${delta / 1000 % 60}"
                     }
-                } else {
-                    Thread.sleep(200L)
                 }
+                Thread.sleep(200L)
             }
+        }
+    }
+
+    private fun setupInput() = btn_ok.setOnClickListener {
+        decodeInput(txt_input.text.toString())
+    }
+
+    private fun decodeInput(input: String) {
+
+        if (input.first() == '.') {
+            val command = input.replace(".","").split(" ")
+            if (command[0] == "t" || command[0] == "time") {
+                camera.videoMaxDuration = command[1].toInt() * 1000
+                toast("Duração configurada para ${camera.videoMaxDuration/1000} segundos")
+            } else {
+                toast("commando não conhecido")
+            }
+        } else {
+            toast("identificador não conhecido")
         }
     }
 
